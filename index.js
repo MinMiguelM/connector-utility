@@ -7,6 +7,9 @@ const doc = require('./src/createDoc')
 const generateIO = IO.generateIO
 const generateBizc = IO.generateBizc
 
+// TODO: posibilidad de especificar el nombre del archivo YAML de entrada
+// TODO: posibilidad de especificar el nombre del archivo BIZC de salida
+
 if (process.argv.length !== 3) {
     console.error('BIZC file name must be specified as an argument');
     process.exit(1);

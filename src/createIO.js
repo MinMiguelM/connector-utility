@@ -13,13 +13,19 @@ buildXML = (object, isInput) => {
 
     if( object[`${baseElement}s`] )
         object[`${baseElement}s`].forEach(element => {
-            if(element.type !== 'object')
-                baseXml += `<xs:element name="${element.name}" type="xs:${element.type}" />`
-            else
-                baseXml += xsdObject(element)
+            // TODO: mostrar error cuando no se pasa ni 'type' ni 'arrayOf'
+
+            if(element.type !== undefined && element.type !== 'object') {
+                baseXml += `<xs:element name="${element.name}" type="xs:${element.type}" />`;
+            } else if (element.type === 'object') {
+                baseXml += xsdObject(element);
+            }
+            else {
+                baseXml += xsdArray(element);
+            }
         });
 
-    baseXml += '</xs:sequence></xs:complexType></xs:element>'
+    baseXml += '</xs:sequence></xs:complexType></xs:element>';
 
     if( !isInput ) {
         // Errors
@@ -27,20 +33,41 @@ buildXML = (object, isInput) => {
     }
 
     baseXml += '</xs:sequence></xs:complexType></xs:element></xs:schema>'
+    console.log(baseXml);
     return new Buffer(baseXml).toString('base64');
 }
 
-xsdObject = (element) => {
-    let elementXml = `<xs:element name="${element.name}" type="xs:complexType"><xs:complexType><xs:sequence>`
-    element.props.forEach( el => {
-        if(el.type !== 'object'){
-            elementXml += `<xs:element name="${el.name}" type="xs:${el.type}" />`
+xsdObject = (element, isInArray = false) => {
+    let elementXml;
+    if (isInArray) {
+        elementXml = `<xs:element name="${element.name}" type="xs:complexType" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence>`;
+    }
+    else {
+        elementXml = `<xs:element name="${element.name}" type="xs:complexType"><xs:complexType><xs:sequence>`;
+    }
+
+    element.props.forEach( property => {
+        if(property.type !== undefined && property.type !== 'object') {
+            elementXml += `<xs:element name="${property.name}" type="xs:${property.type}" />`;
+        } else if (property.type === 'object') {
+            elementXml += xsdObject(property);
         } else {
-            elementXml += xsdObject(el)
+            elementXml += xsdArray(property);
         }
     })
-    elementXml += '</xs:sequence></xs:complexType></xs:element>'
-    return elementXml
+    elementXml += '</xs:sequence></xs:complexType></xs:element>';
+    return elementXml;
+}
+
+xsdArray = (element) => {
+    let elementXml;
+    if (element.arrayOf === 'object') {
+        elementXml = xsdObject(element, true);
+    }
+    else {
+        elementXml = `<xs:element name="${element.name}" type="xs:${element.arrayOf}" minOccurs="0" maxOccurs="unbounded"/>`;
+    }
+    return elementXml;
 }
 
 generateIO = (object, connectorDef) => {
@@ -51,7 +78,7 @@ generateIO = (object, connectorDef) => {
             action.xsdinput = buildXML(actionYml, true)
             action.xsdoutput = buildXML(actionYml)
         } else {
-            console.log(`Action '${name}' has not description in doc.yml, therefore it won't be updated `)
+            console.log(`Action '${name}' has no description in doc.yml, therefore it won't be updated `)
         }
     })
 

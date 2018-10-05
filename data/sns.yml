@@ -1,0 +1,283 @@
+actions:
+  check-if-phone-number-is-opted-out:
+    inputs:
+      - name: phoneNumber
+        type: string
+    outputs:
+      - name: isOptedOut
+        type: boolean
+  confirm-subscription:
+    inputs:
+      - name: Token
+        type: string
+      - name: TopicArn
+        type: string
+      - name: AuthenticateOnUnsubscribe
+        type: string
+    outputs:
+      - name: SubscriptionArn
+        type: string
+  create-topic:
+    inputs:
+      - name: Name
+        type: string
+    outputs:
+      - name: TopicArn
+        type: string
+  delete-topic:
+    inputs:
+      - name: TopicArn
+        type: string
+    outputs:
+      - name: Success
+        type: boolean
+  get-sms-attributes:
+    inputs:
+    outputs:
+      - name: attributes
+        arrayOf: object
+        props:
+          - name: MonthlySpendLimit
+            type: decimal
+          - name: DeliveryStatusIAMRole
+            type: string
+          - name: DeliveryStatusSuccessSamplingRate
+            type: integer
+          - name: DefaultSenderID
+            type: string
+          - name: DefaultSMSType
+            type: string
+          - name: UsageReportS3Bucket
+            type: string
+  get-subscription-attributes:
+    inputs:
+      - name: SubscriptionArn
+        type: string
+    outputs:
+      - name: Attributes
+        type: object
+        props:
+          - name: ConfirmationWasAuthenticated
+            type: string
+          - name: DeliveryPolicy
+            type: string
+          - name: EffectiveDeliveryPolicy
+            type: string
+          - name: Endpoint
+            type: string
+          - name: FilterPolicy
+            type: string
+          - name: Protocol
+            type: string
+          - name: Owner
+            type: string
+          - name: PendingConfirmation
+            type: string
+          - name: RawMessageDelivery
+            type: string
+          - name: SubscriptionArn
+            type: string
+          - name: TopicArn
+            type: string
+  get-topic-attributes:
+    inputs:
+      - name: TopicArn
+        type: string
+    outputs:
+      - name: Attributes
+        type: object
+        props:
+          - name: TopicArn
+            type: string
+          - name: Owner
+            type: string
+          - name: Policy
+            type: string
+          - name: DisplayName
+            type: string
+          - name: SubscriptionsPending
+            type: string
+          - name: SubscriptionsConfirmed
+            type: string
+          - name: SubscriptionsDeleted
+            type: string
+          - name: DeliveryPolicy
+            type: string
+          - name: EffectiveDeliveryPolicy
+            type: string
+            
+  list-phone-numbers-opted-out:
+    inputs:
+      - name: nextToken
+        type: string
+    outputs:
+      - name: phoneNumbers
+        arrayOf: string
+      - name: nextToken
+        type: string
+
+  list-subscriptions:
+    inputs:
+      - name: NextToken
+        type: string
+    outputs:
+      - name: Subscriptions
+        arrayOf: object
+        props:
+          - name: SubscriptionArn
+            type: string
+          - name: Owner
+            type: string
+          - name: Protocol
+            type: string
+          - name: Endpoint
+            type: string
+          - name: TopicArn
+            type: string
+      - name: NextToken
+        type: string
+  
+  list-subscriptions-by-topic:
+    inputs:
+      - name: TopicArn
+        type: string
+      - name: NextToken
+        type: string
+    outputs:
+      - name: Subscriptions
+        arrayOf: object
+        props:
+          - name: SubscriptionArn
+            type: string
+          - name: Owner
+            type: string
+          - name: Protocol
+            type: string
+          - name: Endpoint
+            type: string
+          - name: TopicArn
+            type: string
+      - name: NextToken
+        type: string
+
+  list-topics:
+    inputs:
+      - name: NextToken
+        type: string
+    outputs:
+      - name: Topics
+        arrayOf: object
+        props:
+          - name: TopicArn
+            type: string
+      - name: NextToken
+        type: string
+        
+  opt-in-phone-number:
+    inputs:
+      - name: phoneNumber
+        type: string
+    outputs:
+      - name: Success
+        type: boolean
+      
+  publish:
+    inputs:
+      - name: TopicArn
+        type: string
+      - name: TargetArn
+        type: string
+      - name: PhoneNumber
+        type: string
+      - name: Message
+        type: string
+      - name: Subject
+        type: string
+      - name: MessageStructure
+        type: string
+      - name: MessageAttributes
+        arrayOf: object
+        props:
+          - name: AttributeName
+            type: string
+          - name: DataType
+            type: string
+          - name: StringValue
+            type: string
+          - name: BinaryValue
+            type: string
+    outputs:
+      - name: MessageId
+        type: string
+  set-sms-attributes:
+    inputs:
+      - name: attributes
+        type: object
+        props:
+          - name: MonthlySpendLimit
+            type: string
+          - name: DeliveryStatusIAMRole
+            type: string
+          - name: DeliveryStatusSuccessSamplingRate
+            type: string
+          - name: DefaultSenderID
+            type: string
+          - name: DefaultSMSType
+            type: string
+          - name: UsageReportS3Bucket
+            type: string
+    outputs:
+      - name: Success
+        type: boolean
+  set-subscription-attributes:
+    inputs:
+      - name: SubscriptionArn
+        type: string
+      - name: AttributeName
+        type: string
+      - name: AttributeValue
+        type: string
+    outputs:
+      - name: Success
+        type: boolean
+  set-topic-attributes:
+    inputs:
+      - name: TopicArn
+        type: string
+      - name: AttributeName
+        type: string
+      - name: AttributeValue
+        type: string
+    outputs:
+      - name: Success
+        type: boolean
+  subscribe:
+    inputs:
+      - name: TopicArn
+        type: string
+      - name: Protocol
+        type: string
+      - name: Endpoint
+        type: string
+      - name: Attributes
+        type: object
+        props:
+          - name: DeliveryPolicy
+            type: string
+          - name: FilterPolicy
+            type: string
+          - name: RawMessageDelivery
+            type: string
+      - name: ReturnSubscriptionArn
+        type: boolean
+    outputs:
+      - name: SubscriptionArn
+        type: string
+  unsubscribe:
+    inputs:
+      - name: SubscriptionArn
+        type: string
+    outputs:
+      - name: Success
+        type: boolean
+  
