@@ -42,5 +42,7 @@ extract(zipFile, { dir: `${process.cwd()}/data/${connectorName}` }, (err) => {
     }
 })
 
-// publish in smartsheet
-console.log(doc.generateDocFile(yamlFile))
+// TODO: check for flag
+if(true) {
+    doc.generateDocFile(yamlFile);
+}

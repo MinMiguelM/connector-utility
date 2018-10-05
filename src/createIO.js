@@ -33,7 +33,7 @@ buildXML = (object, isInput) => {
     }
 
     baseXml += '</xs:sequence></xs:complexType></xs:element></xs:schema>'
-    console.log(baseXml);
+    // console.log(baseXml);
     return new Buffer(baseXml).toString('base64');
 }
 
