@@ -1,48 +1,41 @@
-const yaml = require('yaml')
-const fs = require('fs')
-const extract = require('extract-zip')
-const IO = require('./src/createIO')
-const doc = require('./src/createDoc')
+#!/usr/bin/env node
 
-const generateIO = IO.generateIO
-const generateBizc = IO.generateBizc
+const yaml = require('yaml');
+const fs = require('fs');
+const extract = require('extract-zip');
+const IO = require('./src/createIO');
+const doc = require('./src/createDoc');
 
-// TODO: posibilidad de especificar el nombre del archivo YAML de entrada
-// TODO: posibilidad de especificar el nombre del archivo BIZC de salida
+var opts = require('node-getopt').create([
+        ['y', 'yaml=PATH', 'Path to the YAML file to read inputs/outputs from.', 'doc.yml'],
+        ['b', 'bizc=PATH', 'Path to the output bizc file with the updated inputs/output. If no path is specified, the script will overwrite the bizc file used as input.'],
+        ['d', '', 'Generate documentation from the description specified in the YAML document.']
+    ])
+    .setHelp(
+        "Usage:\n" +
+        // TODO: que se pueda especificar el bizc con o sin la extension
+        "  biz <bizc> [OPTIONS]\n" +
+        "  <bizc> is the connector name (without the .bizc extension) that you want to set the inputs/outputs of.\n" +
+        "\n" +
+        "Options:\n" +
+        "[[OPTIONS]]\n" +
+        "\n"
+    )
+    .bindHelp()
+    .parseSystem();
 
-if (process.argv.length !== 3) {
-    console.error('BIZC file name must be specified as an argument');
+console.log(opts.options);
+
+// console.log(opts.argv);
+
+if (opts.argv.length !== 1) {
+    console.info(opts.getHelp());
     process.exit(1);
 }
 
-const connectorName = process.argv[2]
-const bizcFile = `./data/${connectorName}.bizc`
-const zipFile = `./data/${connectorName}.zip`
-try {
-    fs.renameSync(bizcFile, zipFile)
-} catch (ex) {
-    console.error(ex)
-    process.exit(1)
+IO.init(opts.argv[0], opts.options.yaml, opts.options.bizc);
+
+if(opts.options.d) {
+    doc.generateDocFile(opts.options.yaml);
 }
 
-const descFile = fs.readFileSync('data/doc.yml', 'utf8')
-const yamlFile = yaml.parse(descFile)
-
-extract(zipFile, { dir: `${process.cwd()}/data/${connectorName}` }, (err) => {
-    if (!err) {
-        const connectorDefPath = `./data/${connectorName}/def/connector.json`
-        const connectorDef = require(connectorDefPath)
-
-        const newConnectorDef = generateIO(yamlFile, connectorDef)
-        fs.writeFileSync(connectorDefPath, newConnectorDef)
-        
-        generateBizc(bizcFile, zipFile, connectorName);
-    } else {
-        console.error(err)
-    }
-})
-
-// TODO: check for flag
-if(true) {
-    doc.generateDocFile(yamlFile);
-}

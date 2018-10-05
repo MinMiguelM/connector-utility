@@ -1,11 +1,14 @@
+const yaml = require('yaml');
 const fs = require('fs');
+const common = require('./common');
 
-generateDocFile = (object) => {
+generateDocFile = (yamlFile) => {
+    const object = common.parseYaml(yamlFile);
     const tableOfContent = generateDocTableOfContent(object);
     const body = generateDocBody(object);
 
     const content = tableOfContent + body;
-    fs.writeFile('./data/README.md', content, function(err) {
+    fs.writeFile('README.md', content, function(err) {
         if ( err ) {
             console.error(`Error writing doc file: ${err}`);
         } else {

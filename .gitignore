@@ -1,5 +1,8 @@
 # Custom
 *.bizc
+*.zip
+*.PNG
+*.png
 
 # Logs
 logs
@@ -62,7 +65,3 @@ typings/
 
 # next.js build output
 .next
-
-# images
-*.PNG
-*.png

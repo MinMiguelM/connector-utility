@@ -1,6 +1,60 @@
+const yaml = require('yaml');
 const fs = require('fs')
+const extract = require('extract-zip');
 const archiver = require('archiver')
 const rimraf = require('rimraf')
+const common = require('./common');
+
+init = (connectorName, inputYamlFileName, outputBizcFileName) => {
+    // TODO: no deberia importar si el usuario ingresa el conector con la extension o no
+    const inputBizcFile = `${connectorName}.bizc`;
+    const renamedZipFile = `${connectorName}.zip`;
+
+    try {
+        fs.renameSync(inputBizcFile, renamedZipFile);
+        
+        var yamlObject = common.parseYaml(inputYamlFileName);
+
+        console.log("Extracting bizc file...");
+
+        extract(renamedZipFile, { dir: `${process.cwd()}/${connectorName}` }, (err) => {
+            if (!err) {
+                const connectorDefPath = `${process.cwd()}/${connectorName}/def/connector.json`;
+                const connectorDef = require(connectorDefPath);
+        
+                const newConnectorDef = generateIO(yamlObject, connectorDef, inputYamlFileName);
+                fs.writeFileSync(connectorDefPath, newConnectorDef);
+                
+                if (outputBizcFileName) {
+                    generateBizc(outputBizcFileName, renamedZipFile, connectorName);
+                }
+                else {
+                    generateBizc(inputBizcFile, renamedZipFile, connectorName);
+                }
+            } else {
+                console.error(err);
+            }
+        });
+    } catch (ex) {
+        console.error(ex.message);
+        process.exit(1);
+    }
+}
+
+generateIO = (object, connectorDef, inputYamlFile) => {
+    connectorDef.actions.forEach((action) => {
+        const name = action.name;
+        const actionYml = object.actions[name];
+        if ( actionYml ) {
+            action.xsdinput = buildXML(actionYml, true);
+            action.xsdoutput = buildXML(actionYml);
+        } else {
+            console.log(`Action '${name}' has no description in ${inputYamlFile}, therefore it won't be updated `);
+        }
+    })
+
+    return JSON.stringify(connectorDef, null, 4);
+}
 
 buildXML = (object, isInput) => {
     let baseXml = '<?xml version="1.0" encoding="utf-8"?><xs:schema xmlns="http://tempuri.org/XMLSchema1.xsd" xmlns:mstns="http://tempuri.org/XMLSchema1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" id="XMLSchema1" targetNamespace="http://tempuri.org/XMLSchema1.xsd" elementFormDefault="qualified">'
@@ -13,15 +67,20 @@ buildXML = (object, isInput) => {
 
     if( object[`${baseElement}s`] )
         object[`${baseElement}s`].forEach(element => {
-            // TODO: mostrar error cuando no se pasa ni 'type' ni 'arrayOf'
-
-            if(element.type !== undefined && element.type !== 'object') {
-                baseXml += `<xs:element name="${element.name}" type="xs:${element.type}" />`;
-            } else if (element.type === 'object') {
-                baseXml += xsdObject(element);
+            
+            // Si no se especifica ni type ni arrayOf, entonces se considera como string
+            if (element.type === undefined && element.arrayOf === undefined) {
+                baseXml += `<xs:element name="${element.name}" type="xs:string" />`;
             }
             else {
-                baseXml += xsdArray(element);
+                if (element.type !== undefined && element.type !== 'object') {
+                    baseXml += `<xs:element name="${element.name}" type="xs:${element.type}" />`;
+                } else if (element.type === 'object') {
+                    baseXml += xsdObject(element);
+                }
+                else {
+                    baseXml += xsdArray(element);
+                }
             }
         });
 
@@ -47,12 +106,18 @@ xsdObject = (element, isInArray = false) => {
     }
 
     element.props.forEach( property => {
-        if(property.type !== undefined && property.type !== 'object') {
-            elementXml += `<xs:element name="${property.name}" type="xs:${property.type}" />`;
-        } else if (property.type === 'object') {
-            elementXml += xsdObject(property);
-        } else {
-            elementXml += xsdArray(property);
+        // Si no se especifica ni type ni arrayOf, entonces se considera como string
+        if (property.type === undefined && property.arrayOf === undefined) {
+            elementXml += `<xs:element name="${property.name}" type="xs:string" />`;
+        }
+        else {
+            if(property.type !== undefined && property.type !== 'object') {
+                elementXml += `<xs:element name="${property.name}" type="xs:${property.type}" />`;
+            } else if (property.type === 'object') {
+                elementXml += xsdObject(property);
+            } else {
+                elementXml += xsdArray(property);
+            }
         }
     })
     elementXml += '</xs:sequence></xs:complexType></xs:element>';
@@ -70,21 +135,6 @@ xsdArray = (element) => {
     return elementXml;
 }
 
-generateIO = (object, connectorDef) => {
-    connectorDef.actions.forEach((action) => {
-        const name = action.name
-        const actionYml = object.actions[name]
-        if ( actionYml ) {
-            action.xsdinput = buildXML(actionYml, true)
-            action.xsdoutput = buildXML(actionYml)
-        } else {
-            console.log(`Action '${name}' has no description in doc.yml, therefore it won't be updated `)
-        }
-    })
-
-    return JSON.stringify(connectorDef, null, 4)
-}
-
 generateBizc = (bizcFile, zipFile, connectorName) => {
     var output = fs.createWriteStream(bizcFile);
     var archive = archiver('zip');
@@ -98,15 +148,16 @@ generateBizc = (bizcFile, zipFile, connectorName) => {
         throw err;
     });
 
-    archive.pipe(output)
+    archive.pipe(output);
     archive.directory(`data/${connectorName}/`, false);
-    archive.finalize()
+    archive.finalize();
 }
 
 tearDown = (zipFile, connectorName) => {
-    rimraf(`./data/${connectorName}/`, () => console.error('Removing folder. Done!'))
-    rimraf(`./${zipFile}`, () => console.error('Removing zip file. Done!'))
+    rimraf(`./data/${connectorName}/`, () => console.error('Removing folder. Done!'));
+    rimraf(`./${zipFile}`, () => console.error('Removing zip file. Done!'));
 }
 
-exports.generateIO = generateIO
-exports.generateBizc = generateBizc
+exports.init = init;
+exports.generateIO = generateIO;
+exports.generateBizc = generateBizc;

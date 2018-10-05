@@ -1,7 +1,7 @@
 {
-  "name": "automation",
+  "name": "bz-parameters",
   "version": "1.0.0",
-  "description": "",
+  "description": "Allows the specification of input/output parameters of a Bizagi connector through a YAML file",
   "private": true,
   "main": "index.js",
   "scripts": {
@@ -12,8 +12,12 @@
   "dependencies": {
     "archiver": "^3.0.0",
     "extract-zip": "^1.6.7",
+    "node-getopt": "^0.3.2",
     "rimraf": "^2.6.2",
     "yaml": "^1.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "bin": {
+    "biz": "./index.js"
+  }
 }
