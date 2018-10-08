@@ -24,10 +24,6 @@ var opts = require('node-getopt').create([
     .bindHelp()
     .parseSystem();
 
-console.log(opts.options);
-
-// console.log(opts.argv);
-
 if (opts.argv.length !== 1) {
     console.info(opts.getHelp());
     process.exit(1);

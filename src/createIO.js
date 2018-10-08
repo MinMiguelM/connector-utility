@@ -6,18 +6,19 @@ const rimraf = require('rimraf')
 const common = require('./common');
 
 init = (connectorName, inputYamlFileName, outputBizcFileName) => {
-    // TODO: no deberia importar si el usuario ingresa el conector con la extension o no
+    if( connectorName.indexOf('.bizc') >= 0 ) {
+        connectorName = connectorName.substr(0,connectorName.indexOf('.bizc'));
+    }
     const inputBizcFile = `${connectorName}.bizc`;
-    const renamedZipFile = `${connectorName}.zip`;
+    
+    registerListeners(connectorName);
 
     try {
-        fs.renameSync(inputBizcFile, renamedZipFile);
-        
         var yamlObject = common.parseYaml(inputYamlFileName);
 
         console.log("Extracting bizc file...");
 
-        extract(renamedZipFile, { dir: `${process.cwd()}/${connectorName}` }, (err) => {
+        extract(inputBizcFile, { dir: `${process.cwd()}/${connectorName}` }, (err) => {
             if (!err) {
                 const connectorDefPath = `${process.cwd()}/${connectorName}/def/connector.json`;
                 const connectorDef = require(connectorDefPath);
@@ -26,10 +27,10 @@ init = (connectorName, inputYamlFileName, outputBizcFileName) => {
                 fs.writeFileSync(connectorDefPath, newConnectorDef);
                 
                 if (outputBizcFileName) {
-                    generateBizc(outputBizcFileName, renamedZipFile, connectorName);
+                    generateBizc(outputBizcFileName, connectorName, true);
                 }
                 else {
-                    generateBizc(inputBizcFile, renamedZipFile, connectorName);
+                    generateBizc(inputBizcFile, connectorName);
                 }
             } else {
                 console.error(err);
@@ -39,6 +40,17 @@ init = (connectorName, inputYamlFileName, outputBizcFileName) => {
         console.error(ex.message);
         process.exit(1);
     }
+}
+
+registerListeners = (connectorName) => {
+    process.on('exit', () => {
+        tearDown(connectorName)
+    });
+    process.on('SIGINT', () => process.exit());
+    process.on('uncaughtException', (err) => {
+        console.error(err);
+        process.exit();
+    });
 }
 
 generateIO = (object, connectorDef, inputYamlFile) => {
@@ -65,7 +77,7 @@ buildXML = (object, isInput) => {
 
     baseXml += `<xs:element name="${baseElement}s" type="xs:complexType"><xs:complexType><xs:sequence><xs:element name="${baseElement}" type="xs:complexType"><xs:complexType><xs:sequence>`
 
-    if( object[`${baseElement}s`] )
+    if( object[`${baseElement}s`] ) {
         object[`${baseElement}s`].forEach(element => {
             
             // Si no se especifica ni type ni arrayOf, entonces se considera como string
@@ -83,6 +95,7 @@ buildXML = (object, isInput) => {
                 }
             }
         });
+    }
 
     baseXml += '</xs:sequence></xs:complexType></xs:element>';
 
@@ -135,13 +148,16 @@ xsdArray = (element) => {
     return elementXml;
 }
 
-generateBizc = (bizcFile, zipFile, connectorName) => {
-    var output = fs.createWriteStream(bizcFile);
+generateBizc = (bizcFile, connectorName, customName = false) => {
+    if(!customName) {
+        var output = fs.createWriteStream(`NEW - ${bizcFile}`);
+    } else {
+        var output = fs.createWriteStream(`${bizcFile}`);
+    }
     var archive = archiver('zip');
 
     output.on('close', function () {
-        console.log('done with the bizc');
-        tearDown(zipFile, connectorName);
+        console.log('Done with the bizc');
     });
 
     archive.on('error', function(err) {
@@ -149,15 +165,13 @@ generateBizc = (bizcFile, zipFile, connectorName) => {
     });
 
     archive.pipe(output);
-    archive.directory(`data/${connectorName}/`, false);
+    archive.directory(`${process.cwd()}/${connectorName}/`, false);
     archive.finalize();
 }
 
-tearDown = (zipFile, connectorName) => {
-    rimraf(`./data/${connectorName}/`, () => console.error('Removing folder. Done!'));
-    rimraf(`./${zipFile}`, () => console.error('Removing zip file. Done!'));
+tearDown = (connectorName) => {
+    console.log('Removing temporal folder.')
+    rimraf.sync(`./${connectorName}/`);
 }
 
 exports.init = init;
-exports.generateIO = generateIO;
-exports.generateBizc = generateBizc;
