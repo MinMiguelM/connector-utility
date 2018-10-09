@@ -13,9 +13,8 @@ var opts = require('node-getopt').create([
     ])
     .setHelp(
         "Usage:\n" +
-        // TODO: que se pueda especificar el bizc con o sin la extension
         "  biz <bizc> [OPTIONS]\n" +
-        "  <bizc> is the connector name (without the .bizc extension) that you want to set the inputs/outputs of.\n" +
+        "  <bizc> is the connector name (with or without .bizc extension) that you want to set the inputs/outputs of.\n" +
         "\n" +
         "Options:\n" +
         "[[OPTIONS]]\n" +
