@@ -1,5 +1,5 @@
 {
-  "name": "bz-parameters",
+  "name": "bizc",
   "version": "1.0.0",
   "description": "Allows the specification of input/output parameters of a Bizagi connector through a YAML file",
   "private": true,
