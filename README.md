@@ -1,6 +1,6 @@
 # Bizagi Connector Utility (bizc)
 
-This tool makes it easier and faster to create/modify/delete your Bizagi connector action's inputs and outputs. Simply specify your action's inputs and outputs from a YAML file.
+This tool makes it easier and faster to create/modify/delete your Bizagi connector action's inputs and outputs. Simply specify your action's inputs and outputs from a [YAML file](#yaml-file-structure).
 You can generate documentation for your connector as well!
 
 ## Usage
