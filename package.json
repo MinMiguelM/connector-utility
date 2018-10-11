@@ -18,5 +18,9 @@
   "devDependencies": {},
   "bin": {
     "bizc": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MinMiguelM/connector-utility.git"
   }
 }
