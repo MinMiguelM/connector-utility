@@ -44,7 +44,7 @@ actions:
         type: object
         props:    # If type=object, then use props to specify the object's properties
           - name: first_name
-            description: First name of a person    # Used for documentation when the -d option ins specified.
+            description: First name of a person    # Used for documentation when the -d option is specified.
             type: string
           - name: last_name
             description: Last name of a person
@@ -54,7 +54,7 @@ actions:
             type: integer
       - name: children
         description: Name and age of this person's children
-        arrayOf: object    # # If you wan't to specify an array, do not use 'type'. Instead use arrayOf. You can also specify arrays of basic types. For example, arrayOf: string.
+        arrayOf: object    # If you want to specify an array, do not use 'type'. Instead use arrayOf. You can also specify arrays of basic types. For example, arrayOf: string.
         props:    # Since this is an array of objects, you specify the properties for each element of the array using props. Arrays of basic types (like strings, doubles, etc.) don't require the use of props.
           - name: name
             description: Name of this child
@@ -72,3 +72,9 @@ actions:
 * Nested arrays and objects are supported.
 
 * Supported types: `boolean`, `byte`, `date`, `decimal`, `double`, `integer`, `object`, `string`.
+
+## Considerations
+
+* This tool will replace any inputs/outputs you already have in your connector file (.bizc). If you don't want to replace your original connector, you can specify a different connector path as output with the `-b` option.
+* You must first create your actions in the [Bizagi Connector Editor](http://connector.bizagi.com/#/). They should be named appropriately, but it is not necessary for them to be implemented.
+* This tool will not erase any code that your actions do.
