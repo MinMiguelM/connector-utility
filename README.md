@@ -78,3 +78,7 @@ actions:
 * This tool will replace any inputs/outputs you already have in your connector file (.bizc). If you don't want to replace your original connector, you can specify a different connector path as output with the `-b` option.
 * You must first create your actions in the [Bizagi Connector Editor](http://connector.bizagi.com/#/). They should be named appropriately, but it is not necessary for them to be implemented.
 * This tool will not erase any code that your actions do.
+
+## Notice
+
+This package is not maintained or endorsed by Bizagi.
