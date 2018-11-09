@@ -1,0 +1,326 @@
+name: Amazon SES
+version: 2.0.0
+description: Amazon Simple Email Service (Amazon SES) is a cloud-based email sending service designed to help digital marketers and application developers send marketing, notification, and transactional emails.
+actions:
+  update-account-sending-enabled:
+    description: Enables or disables email sending across your entire Amazon SES account in the current AWS Region.
+    inputs:
+      - name: enabled
+        description: indica que habilitar o deshabilitar el envío de correos en la región actual
+        type: boolean
+        required: true
+    outputs:
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  update-account-sending-enabled2:  
+  get-account-sending-enabled:
+    outputs:
+      - name: Enabled
+        description: indica si está habilitado o deshabilitado el envío de correos
+        type: boolean
+  create-custom-verification-email-template:
+    inputs:
+      - name: TemplateName
+        description: nombre que identificará el template a crear
+        type: string
+        required: true
+      - name: FromEmailAddress
+        description: la dirección de correo que enviará dicho email de verificación
+        type: string
+        required: true
+      - name: TemplateSubject
+        description: asunto que contendrá el correo de verificación
+        type: string
+        required: true
+      - name: SuccessRedirectionURL
+        description: En caso de que la verificación sea exitosa, el usuario será redireccionado a esta url
+        type: string
+        required: true
+      - name: FailureRedirectionURL
+        description: En caso de que la verificación no haya sido exitosa, el usuario será redireccionado a esta url
+        type: string
+        required: true
+      - name: TemplateContent
+        description: contenido del correo de verificación, este puede contener código HTML
+        type: string
+        required: true
+    outputs:
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  delete-custom-verification-email-template:
+    inputs:
+      - name: TemplateName
+        description: nombre que con el que se creó el template
+        type: string
+        required: true
+    outputs:
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  get-custom-verification-email-template:
+    inputs:
+      - name: TemplateName
+        description: nombre que con el que se creó el template
+        type: string
+        required: true
+    outputs:
+      - name: TemplateName
+        description: nombre que identificará el template a crear
+        type: string
+      - name: FromEmailAddress
+        description: la dirección de correo que enviará dicho email de verificación
+        type: string
+      - name: TemplateSubject
+        description: asunto que contendrá el correo de verificación
+        type: string
+      - name: TemplateContent
+        description: contenido del correo de verificación, este puede contener código HTML
+        type: string
+      - name: SuccessRedirectionURL
+        description: En caso de que la verificación sea exitosa, el usuario será redireccionado a esta url
+        type: string
+      - name: FailureRedirectionURL
+        description: En caso de que la verificación no haya sido exitosa, el usuario será redireccionado a esta url
+        type: string
+  list-custom-verification-email-template:
+    outputs:
+      - name: CustomVerificationEmailTemplates
+        description: lista de templates que han sido creados
+        arrayOf: object
+        props:
+          - name: TemplateName
+            description: nombre que identificará el template a crear
+            type: string
+          - name: FromEmailAddress
+            description: la dirección de correo que enviará dicho email de verificación
+            type: string
+          - name: TemplateSubject
+            description: asunto que contendrá el correo de verificación
+            type: string
+          - name: SuccessRedirectionURL
+            description: En caso de que la verificación sea exitosa, el usuario será redireccionado a esta url
+            type: string
+          - name: FailureRedirectionURL
+            description: En caso de que la verificación no haya sido exitosa, el usuario será redireccionado a esta url
+            type: string
+  update-custom-verification-email-template:
+    inputs: 
+      - name: TemplateName
+        description: nombre que con el que se creó el template
+        type: string
+        required: true
+      - name: FromEmailAddress
+        description: la dirección de correo que enviará dicho email de verificación
+        type: string
+      - name: TemplateSubject
+        description: asunto que contendrá el correo de verificación
+        type: string
+      - name: SuccessRedirectionURL
+        description: En caso de que la verificación sea exitosa, el usuario será redireccionado a esta url
+        type: string
+      - name: FailureRedirectionURL
+        description: En caso de que la verificación no haya sido exitosa, el usuario será redireccionado a esta url
+        type: string
+      - name: TemplateContent
+        description: contenido del correo de verificación, este puede contener código HTML
+        type: string
+    outputs:
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  create-template:
+    inputs:
+      - name: TemplateName
+        description: nombre que identifica al template
+        type: string
+        required: true
+      - name: HtmlPart
+        description: Contenido del template cuyo contenido puede o no tener sintaxis HTML
+        type: string
+        required: true
+      - name: SubjectPart
+        description: Asunto con el que el template se enviará
+        type: string
+        required: true
+    outputs:
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  delete-template:
+    inputs:
+      - name: TemplateName
+        description: nombre que identifica al template
+        type: string
+        required: true
+    outputs: 
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  update-template:
+    inputs:
+      - name: TemplateName
+        description: nombre que identifica al template
+        type: string
+        required: true
+      - name: HtmlPart
+        description: Contenido del template cuyo contenido puede o no tener sintaxis HTML
+        type: string
+        required: true
+      - name: SubjectPart
+        description: Asunto con el que el template se enviará
+        type: string
+        required: true
+    outputs:
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  get-template:
+    inputs:
+      - name: TemplateName
+        description: nombre que identifica al template
+        type: string
+        required: true
+    outputs:
+      - name: Template
+        description: objecto que contiene las propiedades del template
+        type: object
+        props:
+          - name: TemplateName
+            description: nombre que identifica al template
+            type: string
+          - name: HtmlPart
+            description: Contenido del template cuyo contenido puede o no tener sintaxis HTML
+            type: string
+          - name: SubjectPart
+            description: Asunto con el que el template se enviará
+            type: string
+  list-templates:
+    outputs:
+      - name: TemplatesMetadata
+        description: lista de los templates que han sido creados
+        arrayOf: object
+        props:
+          - name: Name
+            description: nombre del template
+            type: string
+          - name: CreatedTimestamp
+            description: fecha en la que fue creada el template
+            type: string
+  verify-domain-identity:
+    inputs:
+      - name: Domain
+        description: dominio a ser verificado
+        type: string
+        required: true
+    outputs:
+      - name: VerificationToken
+        description: "un TXT record que debe ser ubicado en la configuración del DNS del dominio especificado https://en.wikipedia.org/wiki/TXT_record"
+        type: string
+  verify-email-identity:
+    inputs:
+      - name: EmailAddress
+        description: dirección de correo electrónico a ser verificada
+        type: string
+        required: true
+    outputs:
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  delete-identity:
+    inputs:
+      - name: Identity
+        description: identity a eliminar, esta puede ser un email o domain
+        type: string
+        required: true
+    outputs:
+      - name: success
+        description: indica si la operación se ejecutó exitosamente
+        type: boolean
+  list-identities:
+    inputs: 
+      - name: IdentityType
+        description: "tipo de identity a traer, los posibles valores son: Domain, EmailAddress"
+        type: string
+        required: true
+    outputs:
+      - name: Identities
+        description: una lista con las identidades existentes del tipo especificado
+        arrayOf: string
+  send-email:
+    inputs:
+      - name: to
+        description: el correo electrónico destino, este debe ser un correo verificado en SES o perteneciente a un dominio verificado
+        type: string
+        required: true
+      - name: html
+        description: contenido del cuerpo del correo, este puede contener etiquetas HTML
+        type: string
+        required: true
+      - name: subject
+        description: asunto del correo a ser enviado
+        type: string
+        required: true
+      - name: source
+        description: el correo electrónico origen, este debe ser un correo verificado en SES o perteneciente a un dominio verificado
+        required: true
+        type: string
+    outputs:
+      - name: MessageId
+        description: identificador único del correo que se acaba de enviar
+        type: string
+  send-templated-email:
+    inputs:
+      - name: to
+        description: el correo electrónico destino, este debe ser un correo verificado en SES o perteneciente a un dominio verificado
+        type: string
+        required: true
+      - name: source
+        description: el correo electrónico origen, este debe ser un correo verificado en SES o perteneciente a un dominio verificado
+        required: true
+        type: string
+      - name: TemplateName
+        description: nombre del template que será enviado, este debe existir
+        type: string
+        required: true
+      - name: TemplateData
+        description: "una lista de valores a reemplazar para aplicar al template. Este parámetro es un objecto JSON, cuyos llaves corresponden a variables a ser reemplazadas en el template: https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-personalized-email-api.html. Si el template tiene variables y esas no son enviadas en este parámetro, el correo no será enviado"
+        type: string
+    outputs:
+      - name: MessageId
+        description: identificador único del correo que se acaba de enviar
+        type: string
+
+  get-send-statistics:
+    outputs:
+      - name: SendDataPoints
+        description: lista de data points, donde cada uno representa 15 minutos de actividad
+        arrayOf: object
+        props:
+          - name: Timestamp
+            description: tiempo del data point
+            type: string
+          - name: DeliveryAttempts
+            description: número de emails que han sido enviados
+            type: integer
+          - name: Bounces
+            description: número de emails que han sido rebotados
+            type: integer
+          - name: Complaints
+            description: número de emails no deseados que fueron rechazados por el destinatario
+            type: integer
+          - name: Rejects
+            description: número de emails rechazados por Amazon SES
+            type: integer
+  get-send-quota:
+    outputs:
+      - name: Max24HourSend
+        description: el número máximo de emails que el usuario está permitido enviar en un intervalo de 24 horas
+        type: integer
+      - name: MaxSendRate
+        description: el número máximo de emails que Amazon SES puede enviar por segundo
+        type: integer
+      - name: SentLast24Hours
+        description: número de emails enviados durante las últimas 24 horas
+        type: integer
