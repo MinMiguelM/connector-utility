@@ -88,7 +88,7 @@ generateDocHeader = (object) => {
     if (!object.name) return docBody;
 
     docBody += `# ${object.name}\n`;
-    docBody += `[![](https://img.shields.io/badge/version-${object.version}-blue.svg)](https://www.bizagi.com/es/comunidad/global-xchange)\n`;
+    docBody += `[![](https://img.shields.io/badge/version-${object.version}-blue.svg)](https://www.bizagi.com/es/comunidad/global-xchange)\n\n`;
     docBody += `${object.description}\n`;
     docBody += '***\n';
     return docBody;

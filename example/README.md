@@ -1,5 +1,6 @@
 # Amazon SES
 [![](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://www.bizagi.com/es/comunidad/global-xchange)
+
 Amazon Simple Email Service (Amazon SES) is a cloud-based email sending service designed to help digital marketers and application developers send marketing, notification, and transactional emails.
 ***
 ## List of actions (20)
