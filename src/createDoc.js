@@ -39,14 +39,15 @@ generateDocBody = (object) => {
         if (!actionObj) continue;
 
         docBody += `## ${action}\n`;
-        if(actionObj.description) {
+        if(actionObj.description !== undefined) {
             docBody += `${actionObj.description}\n`;
         }
         docBody += `### INPUTS:\n`;
         if(actionObj.inputs){
             actionObj.inputs.forEach(input => {
-                let type = input.type === undefined ? `lista de ${input.arrayOf}` : input.type;
-                docBody += `- ${input.name}(${type} - ${input.required ? 'requerido' : 'opcional'}): ${input.description}\n`;
+                let type = input.type === undefined ? `array of ${input.arrayOf}` : input.type;
+                var description = (input.description !== undefined ? input.description : '');
+                docBody += `- ${input.name} (${type} - ${input.required ? 'required' : 'optional'}): ${description}\n`;
                 if(input.type === 'object' || input.arrayOf === 'object'){
                     docBody += objectProps(input.props, true, 1);
                 }
@@ -55,8 +56,9 @@ generateDocBody = (object) => {
         docBody += "### OUTPUTS:\n"
         if(actionObj.outputs){
             actionObj.outputs.forEach(input => {
-                let type = input.type === undefined ? `lista de ${input.arrayOf}` : input.type;
-                docBody += `- ${input.name}(${type}): ${input.description}\n`;
+                let type = input.type === undefined ? `array of ${input.arrayOf}` : input.type;
+                var description = (input.description !== undefined ? input.description : '');
+                docBody += `- ${input.name} (${type}): ${description}\n`;
                 if(input.type === 'object' || input.arrayOf === 'object'){
                     docBody += objectProps(input.props, false, 1);
                 }
@@ -70,14 +72,14 @@ generateDocBody = (object) => {
 objectProps = (props, isInput, tabTimes) => {
     let docBody = '';
     props.forEach( prop => {
-        let type = prop.type === undefined ? `lista de ${prop.arrayOf}` : prop.type;
-        docBody += `${'\t'.repeat(tabTimes)}- ${prop.name}(${type}${
+        let type = prop.type === undefined ? `array of ${prop.arrayOf}` : prop.type;
+        docBody += `${'\t'.repeat(tabTimes)}- ${prop.name} (${type}${
             isInput ? 
-                prop.required ? ' - requerido' : ' - opcional'
+                prop.required ? ' - required' : ' - optional'
             : ''
         }): ${prop.description}\n`;
         if(prop.type === 'object' || prop.arrayOf === 'object') {
-            docBody += objectProps(prop.props, tabTimes + 1);
+            docBody += objectProps(prop.props, isInput, tabTimes + 1);
         }
     })
     return docBody;
