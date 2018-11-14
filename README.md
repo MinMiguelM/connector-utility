@@ -24,9 +24,12 @@ You can generate documentation for your connector as well!
 
 ```yaml
 # ConnectorInputsOutputs.yaml
-
+name: my-connector    # name of connector. This value is only for documentation
+version: 1.0.0    # current version of the connector. This value is only for documentation
+description: my first connector    # describes the purpose of the connector. This value is only for documentation
 actions:
   my-action:    # Action name
+    description: my first action    # describes the purpose of this action
     inputs:    # Inputs of this action
       - name: first_name    # name of the input
         description: This is the first name of a person    # Description of the first_name input. Used for documentation purposes when the -d option is specified.

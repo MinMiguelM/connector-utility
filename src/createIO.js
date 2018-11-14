@@ -1,4 +1,3 @@
-const yaml = require('yaml');
 const fs = require('fs')
 const extract = require('extract-zip');
 const archiver = require('archiver')
