@@ -47,7 +47,7 @@ generateDocBody = (object) => {
             actionObj.inputs.forEach(input => {
                 let type = input.type === undefined ? `array of ${input.arrayOf}` : input.type;
                 var description = (input.description !== undefined ? input.description : '');
-                docBody += `- ${input.name} (${type} - ${input.required ? 'required' : 'optional'}): ${description}\n`;
+                docBody += `· ${input.name} (${type} - ${input.required ? 'required' : 'optional'}): ${description}\n`;
                 if(input.type === 'object' || input.arrayOf === 'object'){
                     docBody += objectProps(input.props, true, 1);
                 }
@@ -58,7 +58,7 @@ generateDocBody = (object) => {
             actionObj.outputs.forEach(input => {
                 let type = input.type === undefined ? `array of ${input.arrayOf}` : input.type;
                 var description = (input.description !== undefined ? input.description : '');
-                docBody += `- ${input.name} (${type}): ${description}\n`;
+                docBody += `· ${input.name} (${type}): ${description}\n`;
                 if(input.type === 'object' || input.arrayOf === 'object'){
                     docBody += objectProps(input.props, false, 1);
                 }
@@ -73,7 +73,7 @@ objectProps = (props, isInput, tabTimes) => {
     let docBody = '';
     props.forEach( prop => {
         let type = prop.type === undefined ? `array of ${prop.arrayOf}` : prop.type;
-        docBody += `${'\t'.repeat(tabTimes)}- ${prop.name} (${type}${
+        docBody += `${'\t'.repeat(tabTimes)}· ${prop.name} (${type}${
             isInput ? 
                 prop.required ? ' - required' : ' - optional'
             : ''
