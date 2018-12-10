@@ -5,11 +5,11 @@ const rimraf = require('rimraf')
 const common = require('./common');
 
 init = (connectorName, inputYamlFileName, outputBizcFileName) => {
-    if( connectorName.indexOf('.bizc') >= 0 ) {
-        connectorName = connectorName.substr(0,connectorName.indexOf('.bizc'));
+    if (connectorName.indexOf('.bizc') >= 0) {
+        connectorName = connectorName.substr(0, connectorName.indexOf('.bizc'));
     }
     const inputBizcFile = `${connectorName}.bizc`;
-    
+
     registerListeners(connectorName);
 
     try {
@@ -21,10 +21,10 @@ init = (connectorName, inputYamlFileName, outputBizcFileName) => {
             if (!err) {
                 const connectorDefPath = `${process.cwd()}/${connectorName}/def/connector.json`;
                 const connectorDef = require(connectorDefPath);
-        
+
                 const newConnectorDef = generateIO(yamlObject, connectorDef, inputYamlFileName);
                 fs.writeFileSync(connectorDefPath, newConnectorDef);
-                
+
                 if (outputBizcFileName) {
                     generateBizc(outputBizcFileName, connectorName, true);
                 }
@@ -56,7 +56,7 @@ generateIO = (object, connectorDef, inputYamlFile) => {
     connectorDef.actions.forEach((action) => {
         const name = action.name;
         const actionYml = object.actions[name];
-        if ( actionYml ) {
+        if (actionYml) {
             action.xsdinput = buildXML(actionYml, true);
             action.xsdoutput = buildXML(actionYml);
         } else {
@@ -70,15 +70,26 @@ generateIO = (object, connectorDef, inputYamlFile) => {
 buildXML = (object, isInput) => {
     let baseXml = '<?xml version="1.0" encoding="utf-8"?><xs:schema xmlns="http://tempuri.org/XMLSchema1.xsd" xmlns:mstns="http://tempuri.org/XMLSchema1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" id="XMLSchema1" targetNamespace="http://tempuri.org/XMLSchema1.xsd" elementFormDefault="qualified">'
     let baseElement = 'output'
-    if ( isInput ) {
+    if (isInput) {
         baseElement = 'input'
     }
 
-    baseXml += `<xs:element name="${baseElement}s" type="xs:complexType"><xs:complexType><xs:sequence><xs:element name="${baseElement}" type="xs:complexType"><xs:complexType><xs:sequence>`
+    baseXml += `<xs:element name="${baseElement}s" type="xs:complexType"><xs:complexType><xs:sequence>`;
 
-    if( object[`${baseElement}s`] ) {
-        object[`${baseElement}s`].forEach(element => {
-            
+    var baseObject = null;
+
+    if (object[`${baseElement}s`]) {
+        baseXml += `<xs:element name="${baseElement}" type="xs:complexType" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence>`;
+        baseObject = object[`${baseElement}s`];
+    }
+    else if (object[`${baseElement}`]) {
+        baseXml += `<xs:element name="${baseElement}" type="xs:complexType"><xs:complexType><xs:sequence>`;
+        baseObject = object[`${baseElement}`];
+    }
+
+    if (baseObject) {
+        baseObject.forEach(element => {
+
             // Si no se especifica ni type ni arrayOf, entonces se considera como string
             if (element.type === undefined && element.arrayOf === undefined) {
                 baseXml += `<xs:element name="${element.name}" type="xs:string" />`;
@@ -98,7 +109,7 @@ buildXML = (object, isInput) => {
 
     baseXml += '</xs:sequence></xs:complexType></xs:element>';
 
-    if( !isInput ) {
+    if (!isInput) {
         // Errors
         baseXml += '<xs:element name="error" type="xs:complexType"><xs:complexType><xs:sequence><xs:element name="error" type="xs:string" /><xs:element name="message" type="xs:string" /><xs:element name="status" type="xs:integer" /></xs:sequence></xs:complexType></xs:element>'
     }
@@ -117,13 +128,13 @@ xsdObject = (element, isInArray = false) => {
         elementXml = `<xs:element name="${element.name}" type="xs:complexType"><xs:complexType><xs:sequence>`;
     }
 
-    element.props.forEach( property => {
+    element.props.forEach(property => {
         // Si no se especifica ni type ni arrayOf, entonces se considera como string
         if (property.type === undefined && property.arrayOf === undefined) {
             elementXml += `<xs:element name="${property.name}" type="xs:string" />`;
         }
         else {
-            if(property.type !== undefined && property.type !== 'object') {
+            if (property.type !== undefined && property.type !== 'object') {
                 elementXml += `<xs:element name="${property.name}" type="xs:${property.type}" />`;
             } else if (property.type === 'object') {
                 elementXml += xsdObject(property);
@@ -148,7 +159,7 @@ xsdArray = (element) => {
 }
 
 generateBizc = (bizcFile, connectorName, customName = false) => {
-    if(!customName) {
+    if (!customName) {
         var output = fs.createWriteStream(`NEW - ${bizcFile}`);
     } else {
         var output = fs.createWriteStream(`${bizcFile}`);
@@ -159,7 +170,7 @@ generateBizc = (bizcFile, connectorName, customName = false) => {
         console.log('Done with the bizc');
     });
 
-    archive.on('error', function(err) {
+    archive.on('error', function (err) {
         throw err;
     });
 

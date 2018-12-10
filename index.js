@@ -6,7 +6,7 @@ const package = require('./package');
 
 var opts = require('node-getopt').create([
         ['y', 'yaml=PATH', 'Path to the YAML file to read inputs/outputs from.', 'doc.yml'],
-        ['b', 'bizc=PATH', 'Path to the output bizc file with the updated inputs/output. If no path is specified, the script will overwrite the bizc file used as input.'],
+        ['b', 'bizc=PATH', 'Path to the output bizc file with the updated inputs/output. If no path is specified, the script will create a new bizc file with a "NEW" prefix.'],
         ['d', '', 'Generate documentation from the description specified in the YAML document.'],
         ['v', 'version', 'Print bizc version']
     ])

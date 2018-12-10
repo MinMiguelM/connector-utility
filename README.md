@@ -30,7 +30,7 @@ description: my first connector    # describes the purpose of the connector. Thi
 actions:
   my-action:    # Action name
     description: my first action    # describes the purpose of this action
-    inputs:    # Inputs of this action
+    input:    # Inputs of this action (input is a single object). For an array of objects, use "inputs" instead of "input".
       - name: first_name    # name of the input
         description: This is the first name of a person    # Description of the first_name input. Used for documentation purposes when the -d option is specified.
         type: string    # type of first_name
@@ -38,7 +38,7 @@ actions:
         description: This is the last name of a person
         type: string    # type of last_name
         required: true   # This input is required. Currently used for documentation purposes.
-    outputs:    # Outputs of this action
+    outputs:    # Outputs of this action (outputs is an array of objects). For a single object, use "output" instead of "outputs".
       - name: id
         description: ID of the person
         type: string
@@ -76,9 +76,12 @@ actions:
 
 * Supported types: `boolean`, `byte`, `date`, `decimal`, `double`, `integer`, `object`, `string`.
 
+* If your action returns an array of Objects (ie. the `outputs.output` object of the connector should be an array), then specify the necessary properties under the `outputs` object in the YAML file. If your output is a single object, use the `output` object instead.
+
+* Likewise, if your action takes an array of Objects as input (ie. the `inputs.input` object of the connector should be an array), then specify the necessary properties under the `inputs` object in the YAML file. If your input is a single object, use the `input` object instead.
+
 ## Considerations
 
-* This tool will replace any inputs/outputs you already have in your connector file (.bizc). If you don't want to replace your original connector, you can specify a different connector path as output with the `-b` option.
 * You must first create your actions in the [Bizagi Connector Editor](http://connector.bizagi.com/#/). They should be named appropriately, but it is not necessary for them to be implemented.
 * This tool will not erase any code that your actions do.
 
