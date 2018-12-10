@@ -1,6 +1,6 @@
 {
   "name": "bizc",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "Allows the specification of input/output parameters of a Bizagi connector through a YAML file",
   "main": "index.js",
   "scripts": {
