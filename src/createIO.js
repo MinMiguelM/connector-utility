@@ -82,7 +82,7 @@ buildXML = (object, isInput) => {
         baseXml += `<xs:element name="${baseElement}" type="xs:complexType" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence>`;
         baseObject = object[`${baseElement}s`];
     }
-    else if (object[`${baseElement}`]) {
+    else {
         baseXml += `<xs:element name="${baseElement}" type="xs:complexType"><xs:complexType><xs:sequence>`;
         baseObject = object[`${baseElement}`];
     }
